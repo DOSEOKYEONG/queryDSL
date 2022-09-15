@@ -45,21 +45,21 @@ class UserRepositoryTests {
 		userRepository.saveAll(Arrays.asList(siteUser3, siteUser4));
 	}
 
-	@Test
-	@DisplayName("1번 회원을 Qsl로 가져오기")
-	void t2() {
-		SiteUser siteUser1 = new SiteUser(null, "user1", "{noop}1234", "user1@test.com");
-		SiteUser siteUser2 = new SiteUser(null, "user2", "{noop}1234", "user2@test.com");
-
-		userRepository.saveAll(Arrays.asList(siteUser1, siteUser2));
-
-		SiteUser u1 = userRepository.getQslUser(1L);
-
-		assertThat(u1.getId()).isEqualTo(1L);
-		assertThat(u1.getUsername()).isEqualTo("user1");
-		assertThat(u1.getEmail()).isEqualTo("user1@test.com");
-		assertThat(u1.getPassword()).isEqualTo("{noop}1234");
-	}
+//	@Test
+//	@DisplayName("1번 회원을 Qsl로 가져오기")
+//	void t2() {
+//		SiteUser siteUser1 = new SiteUser(null, "user1", "{noop}1234", "user1@test.com");
+//		SiteUser siteUser2 = new SiteUser(null, "user2", "{noop}1234", "user2@test.com");
+//
+//		userRepository.saveAll(Arrays.asList(siteUser1, siteUser2));
+//
+//		SiteUser u1 = userRepository.getQslUser(1L);
+//
+//		assertThat(u1.getId()).isEqualTo(1L);
+//		assertThat(u1.getUsername()).isEqualTo("user1");
+//		assertThat(u1.getEmail()).isEqualTo("user1@test.com");
+//		assertThat(u1.getPassword()).isEqualTo("{noop}1234");
+//	}
 
 	@Test
 	@DisplayName("모든 회원 수")
@@ -131,7 +131,7 @@ class UserRepositoryTests {
 	void t8() {
 		long totalCount = userRepository.count();
 		int pageSize = 1; // 한 페이지에 보여줄 아이템 개수
-		int totalPages = (int)Math.ceil(totalCount / (double)pageSize);
+		int totalPages = (int) Math.ceil(totalCount / (double) pageSize);
 		int page = 1;
 		String kw = "user";
 
@@ -183,7 +183,7 @@ class UserRepositoryTests {
 	void t9() {
 		long totalCount = userRepository.count();
 		int pageSize = 1; // 한 페이지에 보여줄 아이템 개수
-		int totalPages = (int)Math.ceil(totalCount / (double)pageSize);
+		int totalPages = (int) Math.ceil(totalCount / (double) pageSize);
 		int page = 1;
 		String kw = "user";
 
@@ -206,4 +206,21 @@ class UserRepositoryTests {
 		assertThat(u.getUsername()).isEqualTo("user1");
 		assertThat(u.getEmail()).isEqualTo("user1@test.com");
 		assertThat(u.getPassword()).isEqualTo("{noop}1234");
+	}
+
+	@Test
+	@DisplayName("회원에게 관심사를 등록할 수 있다.")
+	void t10() {
+		SiteUser u2 = userRepository.getQslUser(2L);
+
+		u2.addInterestKeywordContent("축구");
+		u2.addInterestKeywordContent("롤");
+		u2.addInterestKeywordContent("헬스");
+		u2.addInterestKeywordContent("헬스"); // 중복등록은 무시
+
+		userRepository.save(u2);
+		// 엔티티클래스 : InterestKeyword(interest_keyword 테이블)
+		// 중간테이블도 생성되어야 함, 힌트 : @ManyToMany
+		// interest_keyword 테이블에 축구, 롤, 헬스에 해당하는 row 3개 생성
+	}
 }
